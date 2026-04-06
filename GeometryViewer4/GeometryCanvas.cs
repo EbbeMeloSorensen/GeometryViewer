@@ -172,14 +172,18 @@ namespace GeometryViewer4
             {
                 var currentMouse = mousePos;
 
-                // Convert pixel delta to world delta
-                var worldStart = inverse.Transform(_panStartMouse);
-                var worldCurrent = inverse.Transform(currentMouse);
-                var deltaWorld = worldStart - worldCurrent;
+                var deltaPixels = currentMouse - _panStartMouse;
+
+                var scaleX = Scaling.Width;
+                var scaleY = Scaling.Height;
+
+                // Convert pixel delta → world delta
+                var deltaWorldX = deltaPixels.X / scaleX;
+                var deltaWorldY = deltaPixels.Y / scaleY;
 
                 WorldOrigin = new Point(
-                    _panStartWorldOrigin.X + deltaWorld.X,
-                    _panStartWorldOrigin.Y + deltaWorld.Y);
+                    _panStartWorldOrigin.X - deltaWorldX,
+                    _panStartWorldOrigin.Y - deltaWorldY);
             }
             else
             {
@@ -208,6 +212,64 @@ namespace GeometryViewer4
             {
                 CursorWorldPosition = null;
             }
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            if (ActualWidth == 0 || ActualHeight == 0)
+                return;
+
+            var mousePos = e.GetPosition(this);
+
+            var worldWindow = ComputeWorldWindow();
+            var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
+
+            var inverse = transform;
+            inverse.Invert();
+
+            // 1. World point under cursor BEFORE zoom
+            var worldBefore = inverse.Transform(mousePos);
+
+            // 2. Determine zoom factor
+            var zoomFactor = e.Delta > 0 ? 0.8 : 1.2;
+
+            var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
+            var alt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;
+
+            var scaleX = Scaling.Width;
+            var scaleY = Scaling.Height;
+
+            if (ctrl)
+            {
+                // X only
+                scaleX *= zoomFactor;
+            }
+            else if (alt)
+            {
+                // Y only
+                scaleY *= zoomFactor;
+            }
+            else
+            {
+                // uniform
+                scaleX *= zoomFactor;
+                scaleY *= zoomFactor;
+            }
+
+            var newScaling = new Size(scaleX, scaleY);
+
+            // 3. Compute new origin so cursor stays fixed
+            // Screen → world relation:
+            // world = origin + pixel * unitsPerPixel
+
+            var newOriginX = worldBefore.X - mousePos.X / newScaling.Width;
+            var newOriginY = worldBefore.Y - mousePos.Y / newScaling.Height;
+
+            // 4. Apply
+            Scaling = newScaling;
+            WorldOrigin = new Point(newOriginX, newOriginY);
         }
 
         // =============================
