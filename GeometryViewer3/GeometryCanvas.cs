@@ -38,6 +38,12 @@ namespace GeometryViewer3
             set => SetValue(ScalingProperty, value);
         }
 
+        public Point CursorWorldPosition
+        {
+            get => (Point)GetValue(CursorWorldPositionProperty);
+            set => SetValue(CursorWorldPositionProperty, value);
+        }
+
         public static readonly DependencyProperty WorldOriginProperty =
             DependencyProperty.Register(
                 nameof(WorldOrigin),
@@ -51,6 +57,13 @@ namespace GeometryViewer3
                 typeof(Size),
                 typeof(GeometryCanvas),
                 new FrameworkPropertyMetadata(new Size(1, 1), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty CursorWorldPositionProperty =
+            DependencyProperty.Register(
+                nameof(CursorWorldPosition),
+                typeof(Point),
+                typeof(GeometryCanvas),
+                new FrameworkPropertyMetadata(default(Point)));
 
         public Rect WorldWindow => ComputeWorldWindow();
 
@@ -110,6 +123,23 @@ namespace GeometryViewer3
         {
             base.OnRenderSizeChanged(sizeInfo);
             InvalidateVisual();
+        }
+
+        protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        {
+            base.OnMouseMove(e);
+
+            var mousePos = e.GetPosition(this);
+
+            var worldWindow = ComputeWorldWindow();
+            var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
+
+            var inverse = transform;
+            inverse.Invert();
+
+            var worldPos = inverse.Transform(mousePos);
+
+            CursorWorldPosition = worldPos;
         }
 
         // =============================

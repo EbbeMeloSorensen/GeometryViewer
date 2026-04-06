@@ -7,7 +7,15 @@
         mc:Ignorable="d"
         Title="GeometryViewer3" Height="450" Width="800">
     <Grid>
-        <local:GeometryCanvas
-            Items="{Binding Lines}"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="100"/>
+        </Grid.ColumnDefinitions>
+
+        <local:GeometryCanvas Grid.Column="0"
+            Items="{Binding Lines}"
+            CursorWorldPosition="{Binding CursorWorldPosition, Mode=OneWayToSource}"/>
+
+        <TextBlock Grid.Column="1" Text="{Binding CursorWorldPosition}"/>
     </Grid>
 </Window>

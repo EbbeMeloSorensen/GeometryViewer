@@ -7,6 +7,18 @@ namespace GeometryViewer3
 {
     public class GeometryViewModel : INotifyPropertyChanged
     {
+        private Point _cursorWorldPosition;
+
+        public Point CursorWorldPosition
+        {
+            get => _cursorWorldPosition;
+            set
+            {
+                _cursorWorldPosition = value;
+                OnPropertyChanged();
+            }
+        }
+
         public Point WorldOrigin { get; set; }   // top-left
         public Size Scaling { get; set; }
 
