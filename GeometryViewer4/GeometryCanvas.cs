@@ -151,44 +151,37 @@ namespace GeometryViewer4
 
             var mousePos = e.GetPosition(this);
 
-            var worldWindow = ComputeWorldWindow();
-            var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
-            var inverse = transform;
-            inverse.Invert();
-            var isActive = IsMouseOver || _isPanning;
-
-            if (isActive)
-            {
-                inverse.Invert();
-
-                CursorWorldPosition = inverse.Transform(mousePos);
-            }
-            else
-            {
-                CursorWorldPosition = null;
-            }
-
             if (_isPanning)
             {
-                var currentMouse = mousePos;
+                // Convert pixel delta to world delta
+                var worldWindow = ComputeWorldWindow();
+                var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
+                var inverse = transform;
 
-                var deltaPixels = currentMouse - _panStartMouse;
+                inverse.Invert();
 
-                var scaleX = Scaling.Width;
-                var scaleY = Scaling.Height;
-
-                // Convert pixel delta → world delta
-                var deltaWorldX = deltaPixels.X / scaleX;
-                var deltaWorldY = deltaPixels.Y / scaleY;
+                var worldStart = inverse.Transform(_panStartMouse);
+                var worldCurrent = inverse.Transform(mousePos);
+                var deltaWorld = worldStart - worldCurrent;
 
                 WorldOrigin = new Point(
-                    _panStartWorldOrigin.X - deltaWorldX,
-                    _panStartWorldOrigin.Y - deltaWorldY);
+                    _panStartWorldOrigin.X + deltaWorld.X,
+                    _panStartWorldOrigin.Y + deltaWorld.Y);
             }
             else
             {
-                var worldPos = inverse.Transform(mousePos);
-                CursorWorldPosition = worldPos;
+                if (IsMouseOver)
+                {
+                    var scaleX = Scaling.Width;
+                    var scaleY = Scaling.Height;
+                    var worldX = WorldOrigin.X + mousePos.X / scaleX;
+                    var worldY = WorldOrigin.Y + mousePos.Y / scaleY;
+                    CursorWorldPosition = new Point(worldX, worldY);
+                }
+                else
+                {
+                    CursorWorldPosition = null;
+                }
             }
         }
 
@@ -233,7 +226,7 @@ namespace GeometryViewer4
             var worldBefore = inverse.Transform(mousePos);
 
             // 2. Determine zoom factor
-            var zoomFactor = e.Delta > 0 ? 0.8 : 1.2;
+            var zoomFactor = e.Delta > 0 ? 1.2 : 0.8;
 
             var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
             var alt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;

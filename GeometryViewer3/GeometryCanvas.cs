@@ -151,30 +151,17 @@ namespace GeometryViewer3
 
             var mousePos = e.GetPosition(this);
 
-            var worldWindow = ComputeWorldWindow();
-            var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
-            var inverse = transform;
-            inverse.Invert();
-            var isActive = IsMouseOver || _isPanning;
-
-            if (isActive)
-            {
-                inverse.Invert();
-
-                CursorWorldPosition = inverse.Transform(mousePos);
-            }
-            else
-            {
-                CursorWorldPosition = null;
-            }
-
             if (_isPanning)
             {
-                var currentMouse = mousePos;
-
                 // Convert pixel delta to world delta
+                var worldWindow = ComputeWorldWindow();
+                var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
+                var inverse = transform;
+
+                inverse.Invert();
+
                 var worldStart = inverse.Transform(_panStartMouse);
-                var worldCurrent = inverse.Transform(currentMouse);
+                var worldCurrent = inverse.Transform(mousePos);
                 var deltaWorld = worldStart - worldCurrent;
 
                 WorldOrigin = new Point(
@@ -183,8 +170,18 @@ namespace GeometryViewer3
             }
             else
             {
-                var worldPos = inverse.Transform(mousePos);
-                CursorWorldPosition = worldPos;
+                if (IsMouseOver)
+                {
+                    var scaleX = Scaling.Width;
+                    var scaleY = Scaling.Height;
+                    var worldX = WorldOrigin.X + mousePos.X / scaleX;
+                    var worldY = WorldOrigin.Y + mousePos.Y / scaleY;
+                    CursorWorldPosition = new Point(worldX, worldY);
+                }
+                else
+                {
+                    CursorWorldPosition = null;
+                }
             }
         }
 
