@@ -1,0 +1,5 @@
+Funktionaliteter
+
+1) Funktionalitet: Tegn nogle liniestykker i viewet
+2) Design: Lav en passende arbejdsdeling mellem arkitekturelle lag, såsom viewmodel og view
+3) 
