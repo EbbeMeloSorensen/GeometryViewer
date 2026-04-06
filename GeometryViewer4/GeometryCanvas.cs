@@ -8,6 +8,13 @@ namespace GeometryViewer4
 {
     public class GeometryCanvas : FrameworkElement
     {
+        private const double _zoomBase = 1.2;
+        private const int _minZoomLevel = -20;
+        private const int _maxZoomLevel = 20;
+
+        private int _zoomLevelX;
+        private int _zoomLevelY;
+
         private bool _isPanning;
         private Point _panStartMouse;
         private Point _panStartWorldOrigin;
@@ -226,32 +233,52 @@ namespace GeometryViewer4
             var worldBefore = inverse.Transform(mousePos);
 
             // 2. Determine zoom factor
-            var zoomFactor = e.Delta > 0 ? 1.2 : 0.8;
+            //var zoomFactor = e.Delta > 0 ? 1.2 : 0.8;
+            //var zoomFactor = Math.Pow(0.999, -e.Delta);
+
+            var steps = e.Delta / 120; // standard wheel notch
 
             var ctrl = (Keyboard.Modifiers & ModifierKeys.Control) != 0;
             var alt = (Keyboard.Modifiers & ModifierKeys.Alt) != 0;
 
-            var scaleX = Scaling.Width;
-            var scaleY = Scaling.Height;
-
             if (ctrl)
             {
                 // X only
-                scaleX *= zoomFactor;
+                _zoomLevelX += steps;
             }
             else if (alt)
             {
                 // Y only
-                scaleY *= zoomFactor;
+                _zoomLevelY += steps;
             }
             else
             {
                 // uniform
-                scaleX *= zoomFactor;
-                scaleY *= zoomFactor;
+                _zoomLevelX += steps;
+                _zoomLevelY += steps;
             }
 
-            var newScaling = new Size(scaleX, scaleY);
+            if (_zoomLevelX > _maxZoomLevel)
+            {
+                _zoomLevelX = _maxZoomLevel;
+            }
+            else if (_zoomLevelX < _minZoomLevel)
+            {
+                _zoomLevelX = _minZoomLevel;
+            }
+
+            if (_zoomLevelY > _maxZoomLevel)
+            {
+                _zoomLevelY = _maxZoomLevel;
+            }
+            else if (_zoomLevelY < _minZoomLevel)
+            {
+                _zoomLevelY = _minZoomLevel;
+            }
+
+            var newScaling = new Size(
+                Math.Pow(_zoomBase, _zoomLevelX),
+                Math.Pow(_zoomBase, _zoomLevelY));
 
             // 3. Compute new origin so cursor stays fixed
             // Screen → world relation:

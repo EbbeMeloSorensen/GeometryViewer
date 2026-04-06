@@ -7,4 +7,4 @@ Funktionaliteter
 5) Vis seneste position af cursor i en textblock (seneste, som i at den opdateres i forbindelse med håndtering af et mouse move event)
 6) Lav support for panning ved venstreklik og drag. Sikr, at musen "captures", så den ikke tabes, hvis man dragger uden for viewporten
 7) Lav det sådan, at cursor position kun vises, når cursoren faktisk er over viewet.
-8) 
+8) Lav support for zooming med musens rullehjul, så det at "skubbe" hjulet gør at man zoomer ind med en faktor 1
