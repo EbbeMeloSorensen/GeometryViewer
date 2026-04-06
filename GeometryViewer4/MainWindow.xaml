@@ -9,13 +9,38 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <local:GeometryCanvas Grid.Column="0"
             Items="{Binding Lines}"
-            CursorWorldPosition="{Binding CursorWorldPosition, Mode=OneWayToSource}"/>
+            CursorWorldPosition="{Binding CursorWorldPosition, Mode=OneWayToSource}"
+            Scaling="{Binding Scaling, Mode=OneWayToSource}"/>
 
-        <TextBlock Grid.Column="1" Text="{Binding CursorWorldPosition}"/>
+        <Grid Grid.Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="100"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" Margin="0, 0, 10, 0"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding CursorWorldPosition.X, StringFormat=N2}"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Y:" Margin="0, 0, 10, 0"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CursorWorldPosition.Y, StringFormat=N2}"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="X scale:" Margin="0, 0, 10, 0"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Scaling.Width, StringFormat=N2}"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="Y scale:" Margin="0, 0, 10, 0"/>
+            <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Scaling.Height, StringFormat=N2}"/>
+
+        </Grid>
+
     </Grid>
 </Window>

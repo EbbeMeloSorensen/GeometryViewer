@@ -7,7 +7,18 @@ namespace GeometryViewer4
 {
     public class GeometryViewModel : INotifyPropertyChanged
     {
+        private Size _scaling;
         private Point? _cursorWorldPosition;
+
+        public Size Scaling
+        {
+            get => _scaling;
+            set
+            {
+                _scaling = value;
+                OnPropertyChanged();
+            }
+        }
 
         public Point? CursorWorldPosition
         {
@@ -18,9 +29,6 @@ namespace GeometryViewer4
                 OnPropertyChanged();
             }
         }
-
-        public Point WorldOrigin { get; set; }   // top-left
-        public Size Scaling { get; set; }
 
         public ObservableCollection<LineModel> Lines { get; }
             = new ObservableCollection<LineModel>();
