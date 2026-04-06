@@ -7,16 +7,11 @@ namespace GeometryViewer3
 {
     public class GeometryViewModel : INotifyPropertyChanged
     {
-        private Rect _worldWindow = new Rect(0, 0, 200, 100);
+        public Point WorldOrigin { get; set; }   // top-left
+        public Size Scaling { get; set; }
 
         public ObservableCollection<LineModel> Lines { get; }
             = new ObservableCollection<LineModel>();
-
-        public Rect WorldWindow
-        {
-            get => _worldWindow;
-            set { _worldWindow = value; OnPropertyChanged(); }
-        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

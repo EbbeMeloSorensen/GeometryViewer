@@ -8,7 +8,6 @@
         Title="GeometryViewer3" Height="450" Width="800">
     <Grid>
         <local:GeometryCanvas
-            Items="{Binding Lines}"
-            WorldWindow="{Binding WorldWindow}"/>
+            Items="{Binding Lines}"/>
     </Grid>
 </Window>

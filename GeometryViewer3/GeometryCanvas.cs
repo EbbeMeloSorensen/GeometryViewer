@@ -26,18 +26,33 @@ namespace GeometryViewer3
         // =============================
         // WorldWindow (camera)
         // =============================
-        public Rect WorldWindow
+        public Point WorldOrigin
         {
-            get => (Rect)GetValue(WorldWindowProperty);
-            set => SetValue(WorldWindowProperty, value);
+            get => (Point)GetValue(WorldOriginProperty);
+            set => SetValue(WorldOriginProperty, value);
         }
 
-        public static readonly DependencyProperty WorldWindowProperty =
+        public Size Scaling
+        {
+            get => (Size)GetValue(ScalingProperty);
+            set => SetValue(ScalingProperty, value);
+        }
+
+        public static readonly DependencyProperty WorldOriginProperty =
             DependencyProperty.Register(
-                nameof(WorldWindow),
-                typeof(Rect),
+                nameof(WorldOrigin),
+                typeof(Point),
                 typeof(GeometryCanvas),
-                new FrameworkPropertyMetadata(Rect.Empty, FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(new Point(0, 0), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty ScalingProperty =
+            DependencyProperty.Register(
+                nameof(Scaling),
+                typeof(Size),
+                typeof(GeometryCanvas),
+                new FrameworkPropertyMetadata(new Size(1, 1), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public Rect WorldWindow => ComputeWorldWindow();
 
         // =============================
         // Handle collection changes
@@ -70,11 +85,12 @@ namespace GeometryViewer3
             // Debug background
             dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, ActualWidth, ActualHeight));
 
-            if (Items == null || WorldWindow.IsEmpty)
+            var worldWindow = ComputeWorldWindow();
+
+            if (Items == null || worldWindow.IsEmpty)
                 return;
 
-            var transform = CreateWorldToViewportTransform(WorldWindow, RenderSize);
-
+            var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
             var pen = new Pen(Brushes.Black, 1); // always 1 pixel
 
             foreach (var item in Items)
@@ -89,6 +105,13 @@ namespace GeometryViewer3
             }
         }
 
+        // Suggested by ChatGpt, but it seems unnecessary
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            InvalidateVisual();
+        }
+
         // =============================
         // Transform
         // =============================
@@ -100,10 +123,17 @@ namespace GeometryViewer3
             var m = Matrix.Identity;
 
             m.Translate(-world.X, -world.Y);
-            m.Scale(scaleX, -scaleY); // Y-up → Y-down
-            m.Translate(0, viewport.Height);
+            m.Scale(scaleX, scaleY);
 
             return m;
+        }
+
+        private Rect ComputeWorldWindow()
+        {
+            var width = ActualWidth / Scaling.Width;
+            var height = ActualHeight / Scaling.Height;
+
+            return new Rect(WorldOrigin.X, WorldOrigin.Y, width, height);
         }
     }
 }
