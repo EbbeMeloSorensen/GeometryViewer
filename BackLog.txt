@@ -7,4 +7,8 @@ Funktionaliteter
 5) Vis seneste position af cursor i en textblock (seneste, som i at den opdateres i forbindelse med håndtering af et mouse move event)
 6) Lav support for panning ved venstreklik og drag. Sikr, at musen "captures", så den ikke tabes, hvis man dragger uden for viewporten
 7) Lav det sådan, at cursor position kun vises, når cursoren faktisk er over viewet.
-8) Lav support for zooming med musens rullehjul, så det at "skubbe" hjulet gør at man zoomer ind med en faktor 1
+8) Lav support for zooming med musens rullehjul, så det at "skubbe" hjulet gør at man zoomer IND og det at "trække" hjulet gør at man
+   zoomer UD. Gør gerne det at man beregner scaling ud fra en konstant "zoom base"-værdi (f.eks. på 1.2) og værdier for "zoom level x"
+   og "zoom level y", der begge starter på 0 og så kan bevæge sig op og ned i step af 1 afhængigt af om man zoomer ind eller ud.
+   ScaleX og ScaleY beregnes så som "zoom base" opløftet til zoom level. Bemærk, at det f.eks. indebærer, at zoom level 0 giver en
+   Scale på 1.

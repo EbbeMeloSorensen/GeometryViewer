@@ -110,6 +110,8 @@ namespace GeometryViewer4
             // Debug background
             dc.DrawRectangle(Brushes.White, null, new Rect(0, 0, ActualWidth, ActualHeight));
 
+            DrawGrid(dc);
+
             var worldWindow = ComputeWorldWindow();
 
             if (Items == null || worldWindow.IsEmpty)
@@ -314,6 +316,63 @@ namespace GeometryViewer4
             var height = ActualHeight / Scaling.Height;
 
             return new Rect(WorldOrigin.X, WorldOrigin.Y, width, height);
+        }
+
+        private void DrawGrid(DrawingContext dc)
+        {
+            if (ActualWidth == 0 || ActualHeight == 0)
+                return;
+
+            var scaleX = Scaling.Width;
+            var scaleY = Scaling.Height;
+
+            var stepX = GetNiceStep(scaleX);
+            var stepY = GetNiceStep(scaleY);
+
+            var world = ComputeWorldWindow();
+
+            var pen = new Pen(Brushes.LightGray, 1);
+
+            // Vertical lines
+            for (var x = Math.Floor(world.X / stepX) * stepX; x < world.Right; x += stepX)
+            {
+                var screenX = (x - WorldOrigin.X) * scaleX;
+
+                dc.DrawLine(
+                    pen,
+                    new Point(screenX, 0),
+                    new Point(screenX, ActualHeight));
+            }
+
+            // Horizontal lines
+            for (var y = Math.Floor(world.Y / stepY) * stepY; y < world.Bottom; y += stepY)
+            {
+                var screenY = (y - WorldOrigin.Y) * scaleY;
+
+                dc.DrawLine(
+                    pen,
+                    new Point(0, screenY),
+                    new Point(ActualWidth, screenY));
+            }
+        }
+
+        private double GetNiceStep(double scaling)
+        {
+            var targetPixels = 100; // desired spacing
+
+            var rawStep = targetPixels / scaling;
+
+            var magnitude = Math.Pow(10, Math.Floor(Math.Log10(rawStep)));
+            var normalized = rawStep / magnitude;
+
+            double nice;
+
+            if (normalized < 1.5) nice = 1;
+            else if (normalized < 3) nice = 2;
+            else if (normalized < 7) nice = 5;
+            else nice = 10;
+
+            return nice * magnitude;
         }
     }
 }

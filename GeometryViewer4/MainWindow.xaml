@@ -12,7 +12,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <local:GeometryCanvas Grid.Column="0"
+        <local:GeometryCanvas Grid.Column="0" ClipToBounds="True"
             Items="{Binding Lines}"
             CursorWorldPosition="{Binding CursorWorldPosition, Mode=OneWayToSource}"
             Scaling="{Binding Scaling, Mode=OneWayToSource}"/>
