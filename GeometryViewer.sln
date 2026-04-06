@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryViewer1", "GeometryViewer1\GeometryViewer1.csproj", "{ED7E549A-8E4D-4C83-811D-65D37C2931FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeometryViewer3", "GeometryViewer3\GeometryViewer3.csproj", "{3119F485-3922-42E0-8AC0-BAEBF1421A7C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,10 @@ Global
 		{ED7E549A-8E4D-4C83-811D-65D37C2931FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED7E549A-8E4D-4C83-811D-65D37C2931FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ED7E549A-8E4D-4C83-811D-65D37C2931FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3119F485-3922-42E0-8AC0-BAEBF1421A7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3119F485-3922-42E0-8AC0-BAEBF1421A7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3119F485-3922-42E0-8AC0-BAEBF1421A7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3119F485-3922-42E0-8AC0-BAEBF1421A7C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
