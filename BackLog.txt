@@ -2,4 +2,9 @@ Funktionaliteter
 
 1) Funktionalitet: Tegn nogle liniestykker i viewet
 2) Design: Lav en passende arbejdsdeling mellem arkitekturelle lag, såsom viewmodel og view
-3) Lad World window følge viewport
+3) Lad World window følge viewport, når man resizer vinduet. Sikr, at øverste venstre hjørne fastholdes under resize
+4) Introducer ScalingX og ScalingY - i første omgang som hardkodede værdier
+5) Vis seneste position af cursor i en textblock (seneste, som i at den opdateres i forbindelse med håndtering af et mouse move event)
+6) Lav support for panning ved venstreklik og drag. Sikr, at musen "captures", så den ikke tabes, hvis man dragger uden for viewporten
+7) Lav det sådan, at cursor position kun vises, når cursoren faktisk er over viewet.
+8) 

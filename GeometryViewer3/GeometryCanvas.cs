@@ -43,7 +43,7 @@ namespace GeometryViewer3
             set => SetValue(ScalingProperty, value);
         }
 
-        public Point CursorWorldPosition
+        public Point? CursorWorldPosition
         {
             get => (Point)GetValue(CursorWorldPositionProperty);
             set => SetValue(CursorWorldPositionProperty, value);
@@ -61,14 +61,14 @@ namespace GeometryViewer3
                 nameof(Scaling),
                 typeof(Size),
                 typeof(GeometryCanvas),
-                new FrameworkPropertyMetadata(new Size(3, 3), FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(new Size(1, 1), FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty CursorWorldPositionProperty =
             DependencyProperty.Register(
                 nameof(CursorWorldPosition),
-                typeof(Point),
+                typeof(Point?),
                 typeof(GeometryCanvas),
-                new FrameworkPropertyMetadata(default(Point)));
+                new FrameworkPropertyMetadata(null));
 
         public Rect WorldWindow => ComputeWorldWindow();
 
@@ -153,9 +153,20 @@ namespace GeometryViewer3
 
             var worldWindow = ComputeWorldWindow();
             var transform = CreateWorldToViewportTransform(worldWindow, RenderSize);
-
             var inverse = transform;
             inverse.Invert();
+            var isActive = IsMouseOver || _isPanning;
+
+            if (isActive)
+            {
+                inverse.Invert();
+
+                CursorWorldPosition = inverse.Transform(mousePos);
+            }
+            else
+            {
+                CursorWorldPosition = null;
+            }
 
             if (_isPanning)
             {
@@ -164,7 +175,6 @@ namespace GeometryViewer3
                 // Convert pixel delta to world delta
                 var worldStart = inverse.Transform(_panStartMouse);
                 var worldCurrent = inverse.Transform(currentMouse);
-
                 var deltaWorld = worldStart - worldCurrent;
 
                 WorldOrigin = new Point(
@@ -178,7 +188,7 @@ namespace GeometryViewer3
             }
         }
 
-        protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
 
@@ -187,6 +197,16 @@ namespace GeometryViewer3
                 Mouse.OverrideCursor = Cursors.Arrow;
                 _isPanning = false;
                 ReleaseMouseCapture();
+            }
+        }
+
+        protected override void OnMouseLeave(MouseEventArgs e)
+        {
+            base.OnMouseLeave(e);
+
+            if (!_isPanning)
+            {
+                CursorWorldPosition = null;
             }
         }
 

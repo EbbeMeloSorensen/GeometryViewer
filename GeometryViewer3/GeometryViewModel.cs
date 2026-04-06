@@ -7,9 +7,9 @@ namespace GeometryViewer3
 {
     public class GeometryViewModel : INotifyPropertyChanged
     {
-        private Point _cursorWorldPosition;
+        private Point? _cursorWorldPosition;
 
-        public Point CursorWorldPosition
+        public Point? CursorWorldPosition
         {
             get => _cursorWorldPosition;
             set
