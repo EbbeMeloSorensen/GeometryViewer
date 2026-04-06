@@ -2,11 +2,16 @@
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Input;
 
 namespace GeometryViewer3
 {
     public class GeometryCanvas : FrameworkElement
     {
+        private bool _isPanning;
+        private Point _panStartMouse;
+        private Point _panStartWorldOrigin;
+
         // =============================
         // Items (your geometries)
         // =============================
@@ -56,7 +61,7 @@ namespace GeometryViewer3
                 nameof(Scaling),
                 typeof(Size),
                 typeof(GeometryCanvas),
-                new FrameworkPropertyMetadata(new Size(1, 1), FrameworkPropertyMetadataOptions.AffectsRender));
+                new FrameworkPropertyMetadata(new Size(3, 3), FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty CursorWorldPositionProperty =
             DependencyProperty.Register(
@@ -125,7 +130,22 @@ namespace GeometryViewer3
             InvalidateVisual();
         }
 
-        protected override void OnMouseMove(System.Windows.Input.MouseEventArgs e)
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                Mouse.OverrideCursor = Cursors.Hand;
+                _isPanning = true;
+                _panStartMouse = e.GetPosition(this);
+                _panStartWorldOrigin = WorldOrigin;
+
+                CaptureMouse();
+            }
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
@@ -137,9 +157,37 @@ namespace GeometryViewer3
             var inverse = transform;
             inverse.Invert();
 
-            var worldPos = inverse.Transform(mousePos);
+            if (_isPanning)
+            {
+                var currentMouse = mousePos;
 
-            CursorWorldPosition = worldPos;
+                // Convert pixel delta to world delta
+                var worldStart = inverse.Transform(_panStartMouse);
+                var worldCurrent = inverse.Transform(currentMouse);
+
+                var deltaWorld = worldStart - worldCurrent;
+
+                WorldOrigin = new Point(
+                    _panStartWorldOrigin.X + deltaWorld.X,
+                    _panStartWorldOrigin.Y + deltaWorld.Y);
+            }
+            else
+            {
+                var worldPos = inverse.Transform(mousePos);
+                CursorWorldPosition = worldPos;
+            }
+        }
+
+        protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            if (_isPanning)
+            {
+                Mouse.OverrideCursor = Cursors.Arrow;
+                _isPanning = false;
+                ReleaseMouseCapture();
+            }
         }
 
         // =============================
